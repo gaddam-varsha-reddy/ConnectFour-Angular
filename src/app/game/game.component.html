@@ -1,0 +1,69 @@
+<div>
+    <div class="moving">
+        <div class="moving-bg">
+        </div>
+    </div>
+    <header>
+        <div class="row">
+            <div class="col-4">
+            </div>
+            <div class="col-4">
+                <div class="turnIndicator">
+                    {{turnIndicator}}
+                </div>
+            </div>
+            <div class="col-4">
+                <button class="playAgain" (click)="newGame()">Play Again</button>
+                <button class="exitGame" (click)="exitGame()">Exit</button>
+            </div>
+        </div>
+    </header>
+    <div class="main-container">
+        <div class="row">
+            <div class="col-4">
+                <div class="score-outerboard"><p>Score Board</p>
+                    <div class="score-innerboard">
+                        <div class="row">
+                            <div class="col">
+                                <div class="playerDetails">
+                                    <div>{{playerNames[1]}}</div>
+                                    <div class="playerImage">
+                                        <img src="../assets/images/avathar1.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col score">
+                                <div>{{score[1]}}</div>
+                            </div>
+                        </div>
+                        <div class="row"><div class="vs">VS</div></div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="playerDetails">
+                                    <div>{{playerNames[2]}}</div>
+                                    <div class="playerImage">
+                                        <img src="../assets/images/avathar2.png">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col score">
+                                <div>{{score[2]}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 game-board">
+                    <div class="row p-0 m-0" *ngFor="let  row of board let i=index">
+                        <div class="col p-0 m-0" *ngFor="let col of row let j=index">
+                            <div class="tile" (click)="onTileClick(i,j)" [ngClass]="{'player1Color' : getTileValue(i,j) ==1, 'player2Color': getTileValue(i,j) ==2}">
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="col-4"></div>
+        </div>
+    </div>
+</div>
+    
+    

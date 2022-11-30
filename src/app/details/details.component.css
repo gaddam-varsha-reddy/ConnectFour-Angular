@@ -1,0 +1,128 @@
+.game-name{
+    margin: auto;
+    width: 40%;
+    height: 250px;
+    padding-top: 100px;
+    font-family: cursive;
+    font-size: 70px;
+    position: sticky;
+    font-weight: lighter;
+    text-align: center;
+}
+.moving .moving-bg {
+    box-sizing: content-box;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: url("../../assets/images/sky-background.jpg");
+    background-size: cover;
+    animation: moving 35s linear infinite;
+    padding-bottom: 500px;
+}
+@keyframes moving{
+    from{
+        transform: translateY(0)
+    }
+    to{
+        transform: translateY(-500px)
+    }
+}
+
+.game-options{
+    text-align: center;
+    margin: auto;
+    width: 50%;
+    font-family: cursive;
+    font-size: large;
+    display: flex;
+    position: sticky;
+}
+.single-player{
+    padding: 10px;
+    margin-right: 20px;
+    border: 2px solid black;
+    width: 50%;
+    border-radius: 30px;
+    animation:leftoption-animation 2s linear;
+}
+.multi-player{
+    border: 2px solid black;
+    width: 50%;
+    padding: 10px;
+    border-radius: 30px;
+    animation:rightoption-animation 2s linear;
+}
+.singleplayer-options{
+    text-align: center;
+    width:60%;
+    margin: 50px auto auto auto;
+    position: sticky;
+    font-family: cursive;
+}
+.multiplayer-options{
+    position: sticky;
+    width:40%;
+    margin:50px auto auto auto;
+    text-align: center;
+    font-family: cursive;
+}
+.player-name{
+    border:2px solid black;
+    border-radius: 30px;
+    width: 60%;
+    height: 50px;
+    text-align: center;
+    background-color: unset;
+}
+.activeOption{
+    background-color: darkcyan;
+    color:white;
+}
+
+.playNow{
+    border:2px solid black;
+    width:20%;
+    margin:50px auto auto auto;
+    height:50px;
+    border-radius: 50px;
+    position: sticky;
+    text-align: center;
+    padding-top: 10px;
+    font-family: cursive;
+}
+.playNow:hover{
+    background-color: darkcyan;
+    color:white;
+}
+@keyframes rightoption-animation{
+    from{
+        transform: translateX(500px)
+    }
+    to{
+        transform: translateX(0px)
+    }
+}
+@keyframes leftoption-animation{
+    from{
+        transform: translateX(-500px)
+    }
+    to{
+        transform: translateX(0px)
+    }
+}
+.hide{
+    display:none;
+}
+.multiplayer-details{
+    padding:10px;
+    margin:30px auto auto;
+    width:50%;
+}
+.playername-layout{
+    border:2px solid black;
+    border-radius: 50px;
+    height:50px;
+    text-align: center;
+    background-color: unset;
+}
+

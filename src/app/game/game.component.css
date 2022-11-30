@@ -1,0 +1,143 @@
+.tile{
+    height:55px;
+    width:55px;
+    margin:0px 3px 0px 0px;
+    border-radius: 50%;
+    border: 2px solid black;
+    text-align: center;
+    background-image: url("../../assets/images/sky-background.jpg");
+}
+.game-board{
+    padding: 15px 0px 5px 15px;
+    height: 450px;
+    background-color: #5C4033;
+    display: flex;
+    flex-wrap: wrap;
+    position: sticky;
+    border-radius: 5%;
+    border: 2px solid black;
+    animation:  rightoption-animation 1s linear;
+}
+
+.moving {
+    height: 100%;
+    position: fixed;
+    width: 100%;
+}
+.moving .moving-bg {
+    box-sizing: content-box;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: url("../../assets/images/sky-background.jpg");
+    background-size: cover;
+    animation: moving 35s linear infinite;
+    padding-bottom: 500px;
+}
+@keyframes moving{
+    from{
+        transform: translateY(0)
+    }
+    to{
+        transform: translateY(-500px)
+    }
+}
+
+.turnIndicator{
+    text-align: center;
+    border: 2px solid black;
+    width: 90%;
+    margin: 40px auto 50px auto;
+    background-color: #1d6378;
+    font-weight: lighter;
+    font-size: x-large;
+    font-family: cursive;
+    height: 50px;
+    border-radius: 80px;
+    color: lightgray;
+    position: sticky;
+}
+
+.playAgain{
+    margin: 40px 0px 50px 0px;
+    width: 30%;
+    position: sticky;
+    border: 2px solid black;
+    height: 50px;
+    border-radius: 80px;
+    color: lightgray;
+    background-color: #1d6378;
+    font-family: cursive;
+}
+.exitGame{
+    margin: 40px 0px 50px 10px;
+    width: 30%;
+    position: sticky;
+    border: 2px solid black;
+    height: 50px;
+    border-radius: 80px;
+    color: lightgray;
+    background-color: #1d6378;
+    font-family: cursive;
+}
+.score-outerboard{
+    border: 2px solid #1d6378;
+    height: 400px;
+    margin: auto;
+    width: 70%;
+    position: sticky;
+    margin-top: 50px;
+    text-align: center;
+    font-family: cursive;
+    font-size: xx-large;
+    border-radius: 15px;
+    animation:  leftoption-animation 1s linear;
+}
+.score-innerboard{
+    padding-top: 5px;
+    border:2px solid #1d6378;
+    margin:auto;
+    width:80%;
+    height:300px;
+    font-weight: 700;
+    font-size: 20px;
+    font-family: cursive;
+    border-radius: 15px;
+}
+.playerDetails img{
+    height:80px;
+    width:80px;
+    border-radius: 50%;
+}
+.score{
+    font-weight: normal;
+    margin: auto;
+    font-size: xx-large;
+}
+.vs{
+    font-size: xx-large;
+}
+.player1Color{
+    background-color: red;
+    animation-name: dropanimation;
+    animation-duration: 900ms;
+    background-image: unset;
+}
+.player2Color{
+    background-image: unset;
+    background-color: yellowgreen;
+    animation-name: dropanimation;
+    animation-duration: 900ms;
+}
+@keyframes dropanimation {
+    0% { transform: translateY(-450px);}
+   100% { transform: translateY(0px);}
+ }
+ @keyframes rightoption-animation{
+    from{
+        transform: translateX(500px)
+    }
+    to{
+        transform: translateX(0px)
+    }
+}

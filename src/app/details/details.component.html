@@ -1,0 +1,28 @@
+<div>
+    <div class="moving">
+        <div class="moving-bg">
+        </div>
+    </div>
+    <div class="game-name">Connect Four</div>
+    <div class="game-options">
+        <div class="single-player" (click)="singlePlayer()" [ngClass]="{'activeOption':gameType=='robot'}">Single-Player</div>
+        <div class="multi-player" (click)="multiPLayer()" [ngClass]="{'activeOption':gameType=='manual'}">Multiplayer</div>
+    </div>
+    <div class="singleplayer-options" *ngIf="gameType=='robot'" >
+        <div>Can You Please Enter your name?</div>
+        <div><input type="text" class="player-name" [(ngModel)]="playerNames[1]"></div>
+    </div>
+    <div class="multiplayer-options" *ngIf="gameType=='manual'">
+        <div class="row">
+        <div class="col">
+            <div>Your Name?</div>
+            <div><input type="text" class="playername-layout" [(ngModel)]="playerNames[1]"></div>
+        </div>
+        <div class="col">
+            <div>Your Opponent Name?</div>
+            <div><input type="text" class="playername-layout" [(ngModel)]="playerNames[2]"></div>
+        </div>
+        </div>
+    </div>
+    <div class="playNow" *ngIf="gameType!='none'" (click)="startGame()">Play Now</div>
+</div>
