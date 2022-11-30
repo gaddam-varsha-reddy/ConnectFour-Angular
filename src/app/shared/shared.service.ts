@@ -7,6 +7,7 @@ export class SharedService {
    public playerNames:string[];
    public gameType:string;
    public playerType:string[];
+   
   constructor() {
     this.playerNames=['','',''];
     this.gameType="none";

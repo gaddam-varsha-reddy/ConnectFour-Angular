@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 export class GameComponent implements OnInit {
 
   private currentPlayer:number;
-  private currentWinner:number;
   public playerNames:string[];
   private count:number;
   private rows:number;
@@ -20,14 +19,12 @@ export class GameComponent implements OnInit {
   private totalPlayers=2;
   private gameStatus:string;
   public player:string[];
-  private newRow=0;
   public turnIndicator:string="Start Playing";
   private Window_Length=4;
 
   
   constructor(private shared:SharedService,private router:Router) {
     this.currentPlayer=1;
-    this.currentWinner=0;
     this.playerNames=this.shared.getPlayerNames();
     this.board=[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],];
@@ -40,68 +37,95 @@ export class GameComponent implements OnInit {
     this.turnIndicator= this.playerNames[this.currentPlayer]+"'s turn";
    }
  
-  
-
   getTileValue(row:number,col:number):number{
     return this.board[row][col];
   }
-  getPlayerName(row:number,col:number):string{
-    return this.playerNames[this.board[row][col]];
-   }
-  isTileOccupied(row:number,col:number):boolean{
-    if(this.board[row][col]==1 || this.board[row][col]==2)
-      return true;
-    return false;
-  }
-  manualMove(col:number){
-    if(this.isValidLocation(col)){
-      this.newRow=this.getVacantRow(col);
-      this.board[this.newRow][col]=this.currentPlayer;
-    }
-  }
-  robotMove(){
-    let new_col=this.pick_best_move();
-    if(this.isValidLocation(new_col)){
-      this.manualMove(new_col);
-    }     
-  }
-  drop_piece(temp_board:number[][],row:number,col:number,playerNo:number){
-    temp_board[row][col]=playerNo;
-}
-  score_position(temp_board:number[][],playerNo:number):number{
-    let score=0;
-    let center_array=[];
+
+  totalTilesClicked():number{
+    this.count=0;
     for(let i=0;i<this.rows;i++){
-        center_array.push(temp_board[i][3]);
-    }
-    let center_count=0;
-    
-   center_array.forEach(element => {
-    if (element === playerNo) {
-      center_count += 1;
-    }
-  });
-  score+=center_count;
-  for(let r=0;r<this.rows;r++){
-    let row_array=[];
-    for(let i=0;i<this.columns;i++){
-        row_array.push(temp_board[r][i]);
-    }
-    score+=this.calculate_windowArray(row_array,this.columns-3,2);
-  }
-    for(let c=0;c<this.columns;c++){
-      let col_array=[];
-      for(let i=0;i<this.rows;i++){
-         col_array.push(temp_board[i][c]);
+      for(let j=0;j<this.columns;j++){
+        this.count+=1;
       }
-     score+=this.calculate_windowArray(col_array,this.rows-3,2);
     }
-     score+=this.calculate_DiagonalwindowArray(temp_board,this.rows-3,this.columns-3,2,"down_slope");
-     score+=this.calculate_DiagonalwindowArray(temp_board,this.rows-3,this.columns-3,2,"upward_slope");
-     return score;
+    return this.count;
+   }
+
+  isValidLocation(col:number):boolean{
+    return this.board[0][col]===0;
+   }
+
+  getVacantRow(col:number):number{
+    for(let i=5;i>=0;i--){
+      if(this.board[i][col]===0){
+        return i;
+      }
+    }
+    return 0;
+   }
+  
+   getValidLocations():number[]{
+    let valid_locations = []
+	  for(let col=0;col<this.columns;col++){
+		  if(this.isValidLocation(col)){
+			    valid_locations.push(col);
+          }
+      }
+	  return valid_locations;
   }
 
+  manualMove(col:number):void{
+    if(this.isValidLocation(col)){
+      let newRow=this.getVacantRow(col);
+      this.board[newRow][col]=this.currentPlayer;
+    }
+  }
+
+  robotMove():void{
+    let new_col=this.pick_best_move();
+    this.manualMove(new_col);    
+  }
+
+  drop_piece(temp_board:number[][],row:number,col:number,playerNo:number):void{
+    temp_board[row][col]=playerNo;
+  }
+
+  onTileClick(row:number,col:number):void{
+    if(this.gameStatus!="gameOver"){
+      //if one is manual and one is automated
+      if(this.shared.getGameType()=='robot'){
+          for(let i=1;i<=this.totalPlayers;i++){
+            if(this.player[i]=='robot'){
+                this.robotMove();
+                if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(i)))
+                    break;
+            }
+            else if(this.player[i]=='manual'){
+                this.manualMove(col);
+                if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(i)))
+                  break;
+          }
+          this.currentPlayer=this.currentPlayer === 1?2:1;
+          this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
+          }
+       }
+
+      //if players are manual
+      else if(this.shared.getGameType()=='manual'){
+        this.manualMove(col);
+        if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(this.currentPlayer))){
+           this.currentPlayer=0;
+        }
+        else{
+           this.currentPlayer=this.currentPlayer === 1?2:1;
+           this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
+        }
+      }      
+    }
+   }
+
   pick_best_move():number{
+    //take a temp board and check every possible move which benefits ai 
     let valid_locations =this.getValidLocations();
     let best_score=-1000,row,col,score;
     let best_col =valid_locations[Math.floor(Math.random() * valid_locations.length)];
@@ -117,73 +141,38 @@ export class GameComponent implements OnInit {
     }
     return best_col;
   }
-  getValidLocations(){
-    let valid_locations = []
-	  for(let col=0;col<this.columns;col++){
-		  if(this.isValidLocation(col)){
-			    valid_locations.push(col);
-          }
-      }
-	  return valid_locations;
-  }
-  onTileClick(row:number,col:number):void{
-    if(this.gameStatus!="gameOver"){
-      //if one is manual and one is automated
-      if(this.shared.getGameType()=='robot'){
-          for(let i=1;i<=this.totalPlayers;i++){
-          if(this.player[i]=='robot'){
-              // setTimeout(()=>{
-              //   this.robotMove();
-              // },1500);
-              this.robotMove();
-              if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(i)))
-                  break;
-          }
-          else if(this.player[i]=='manual'){
-                this.manualMove(col);
-                if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(i)))
-                  break;
-          }
-          this.currentPlayer=this.currentPlayer === 1?2:1;
-          }
-       }
 
-      //if players are manual
-      else if(this.shared.getGameType()=='manual'){
-        this.manualMove(col);
-        if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(this.currentPlayer))){
-           this.currentPlayer=0;
-        }
-        else{
-           this.currentPlayer=this.currentPlayer === 1?2:1;
-          this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
-        }
-      }      
-    }
-   }
-  
-  totalTilesClicked():number{
-    this.count=0;
+  score_position(temp_board:number[][],playerNo:number):number{
+    let score=0;
+    let center_array=[];
     for(let i=0;i<this.rows;i++){
-      for(let j=0;j<this.columns;j++){
-        this.count+=1;
+        center_array.push(temp_board[i][3]);
       }
-    }
-    return this.count;
-   }
-
-  isValidLocation(col:number):boolean{
-    return this.board[0][col]===0;
-   }
-  getVacantRow(col:number):number{
-    for(let i=5;i>=0;i--){
-      if(this.board[i][col]===0){
-        return i;
+    let center_count=0;
+    center_array.forEach(element => {
+    if (element === playerNo) {
+      center_count += 1;
+    }});
+    score+=center_count;
+    for(let r=0;r<this.rows;r++){
+      let row_array=[];
+      for(let i=0;i<this.columns;i++){
+        row_array.push(temp_board[r][i]);
       }
+      score+=this.calculate_windowArray(row_array,this.columns-3)}
+    for(let c=0;c<this.columns;c++){
+      let col_array=[];
+      for(let i=0;i<this.rows;i++){
+         col_array.push(temp_board[i][c]);
+      }
+      score+=this.calculate_windowArray(col_array,this.rows-3);
     }
-    return 0;
-   }
-  calculate_windowArray(temp_array:number[],totalColumns:number,playerNo:number){
+     score+=this.calculate_DiagonalwindowArray(temp_board,this.rows-3,this.columns-3,"down_slope");
+     score+=this.calculate_DiagonalwindowArray(temp_board,this.rows-3,this.columns-3,"upward_slope");
+     return score;
+  }
+  
+  calculate_windowArray(temp_array:number[],totalColumns:number):number{
     let sum=0;
     let window_array=[];
     for(let c=0;c<totalColumns;c++){
@@ -191,12 +180,11 @@ export class GameComponent implements OnInit {
         for(let i=0;i<this.Window_Length;i++){
             window_array.push(temp_array[c+i]);
         }
-            sum+= this.evaluate_window(window_array, playerNo);
-        
-    }
+        sum+= this.evaluate_window(window_array);
+      }
     return sum;
   }
-  calculate_DiagonalwindowArray(temp_board:number[][],totalRows:number,totalColumns:number,playerNo:number,slope:string){
+  calculate_DiagonalwindowArray(temp_board:number[][],totalRows:number,totalColumns:number,slope:string):number{
     let sum=0;
      for(let r=0;r<totalRows;r++){
             for(let c=0;c<totalColumns;c++){
@@ -207,12 +195,13 @@ export class GameComponent implements OnInit {
                         else
                             window_array.push(temp_board[r+i][c+i]);
                 }
-                sum+= this.evaluate_window(window_array, playerNo);
-               }
-    } 
+                sum+= this.evaluate_window(window_array);
+            }
+     } 
     return sum;
-}
-evaluate_window(window_array:number[],playerNo:number){
+  }
+
+evaluate_window(window_array:number[]):number{
   let score=0;
   let count_Array={0:0,1:0,2:0};
   window_array.forEach(element => {
@@ -238,7 +227,7 @@ evaluate_window(window_array:number[],playerNo:number){
       score-=15;
   return score;
 }
-  newGame(){
+  newGame():void{
     for(let i=0;i<this.rows;i++){
       for(let j=0;j<this.columns;j++){
           this.board[i][j]=0;
@@ -248,13 +237,15 @@ evaluate_window(window_array:number[],playerNo:number){
     this.currentPlayer=1;
     this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
   }
-  exitGame(){
+
+  exitGame():void{
     this.newGame();
     for(let i=0;i<this.totalPlayers;i++){
       this.score[i]=0;
     }
     this.router.navigateByUrl('/connect');
   }
+
   DirectionsToCheck(playerNo:number):boolean{
     if(this.loopingBoard(0,this.rows,this.columns-3,playerNo))
       return true;
@@ -296,7 +287,6 @@ evaluate_window(window_array:number[],playerNo:number){
       && this.board[c1][c2]==playerNo && this.board[d1][d2]==playerNo)
       {
         this.score[playerNo]+=1;
-        this.currentWinner=playerNo;
         this.gameStatus="gameOver";
         this.turnIndicator=this.playerNames[playerNo] + " won";
         return true;
