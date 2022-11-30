@@ -89,37 +89,38 @@ export class GameComponent implements OnInit {
   drop_piece(temp_board:number[][],row:number,col:number,playerNo:number):void{
     temp_board[row][col]=playerNo;
   }
-
+  
+  changePlayerTurn(idx:number):void{
+    if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(idx)))
+          this.currentPlayer=0;
+    else{ 
+          this.currentPlayer=this.currentPlayer === 1?2:1;
+          this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
+        }
+  }
   onTileClick(row:number,col:number):void{
     if(this.gameStatus!="gameOver"){
       //if one is manual and one is automated
       if(this.shared.getGameType()=='robot'){
           for(let i=1;i<=this.totalPlayers;i++){
             if(this.player[i]=='robot'){
-                this.robotMove();
-                if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(i)))
-                    break;
-            }
+                setTimeout(()=>{
+                  this.robotMove();
+                  this.changePlayerTurn(i);
+              },1000);
+              
+            } 
             else if(this.player[i]=='manual'){
                 this.manualMove(col);
-                if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(i)))
-                  break;
+                this.changePlayerTurn(i);
           }
-          this.currentPlayer=this.currentPlayer === 1?2:1;
-          this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
           }
        }
 
       //if players are manual
       else if(this.shared.getGameType()=='manual'){
         this.manualMove(col);
-        if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(this.currentPlayer))){
-           this.currentPlayer=0;
-        }
-        else{
-           this.currentPlayer=this.currentPlayer === 1?2:1;
-           this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
-        }
+        this.changePlayerTurn(this.currentPlayer);
       }      
     }
    }
