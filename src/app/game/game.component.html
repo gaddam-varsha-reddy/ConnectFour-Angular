@@ -1,4 +1,4 @@
-<div>
+<div class="gamepage">
     <div class="moving">
         <div class="moving-bg">
         </div>
@@ -56,14 +56,44 @@
             <div class="col-4 game-board">
                     <div class="row p-0 m-0" *ngFor="let  row of board let i=index">
                         <div class="col p-0 m-0" *ngFor="let col of row let j=index">
-                            <div class="tile" (click)="onTileClick(i,j)" [ngClass]="{'player1Color' : getTileValue(i,j) ==1, 'player2Color': getTileValue(i,j) ==2}">
+                            <div class="tile" (click)="onTileClick(i,j)">
+                            <div class="ball" [ngClass]="{'player1Color' : getTileValue(i,j) ==1, 'player2Color': getTileValue(i,j) ==2}"> 
+                            </div>
                             </div>
                         </div>
                     </div>
             </div>
             <div class="col-4"></div>
         </div>
+    </div>   
+
+    <div class="modal" [ngClass]="{'modal-open' : isopenModal==true}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{modalTitle}}</h5>
+                    <button type="button" class="close" (click)="closeModal()">
+                        <span>×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="modal-img"><img src="../../assets/images/{{imageName}}"></div>
+                        </div>
+                        <div class="col-9">
+                            <div class="modal-text">{{modalText}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-btn">
+                    <button type="button" (click)="closeModal()">Play Again</button>
+                    <button type="button" (click)="exitGame()">Exit Game</button>
+                </div>
+            </div>
+        </div>
     </div>
+    <div class="modal-backdrop show" [ngStyle]="isopenModal==true ? {display: 'block'} : {display:'none'}"></div>
 </div>
     
     

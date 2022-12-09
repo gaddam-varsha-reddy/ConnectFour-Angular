@@ -21,6 +21,10 @@ export class GameComponent implements OnInit {
   public player:string[];
   public turnIndicator:string="Start Playing";
   private Window_Length=4;
+  public isopenModal;
+  public modalTitle;
+  public modalText;
+  public imageName;
 
   
   constructor(private shared:SharedService,private router:Router) {
@@ -35,6 +39,10 @@ export class GameComponent implements OnInit {
     this.gameStatus="running";
     this.player=this.shared.playerType;
     this.turnIndicator= this.playerNames[this.currentPlayer]+"'s turn";
+    this.isopenModal=false;
+    this.modalTitle='';
+    this.modalText='';
+    this.imageName='gametie.jpg';
    }
  
   getTileValue(row:number,col:number):number{
@@ -45,7 +53,8 @@ export class GameComponent implements OnInit {
     this.count=0;
     for(let i=0;i<this.rows;i++){
       for(let j=0;j<this.columns;j++){
-        this.count+=1;
+        if(this.board[i][j]!=0)
+          this.count+=1;
       }
     }
     return this.count;
@@ -74,11 +83,13 @@ export class GameComponent implements OnInit {
 	  return valid_locations;
   }
 
-  manualMove(col:number):void{
+  manualMove(col:number):boolean{
     if(this.isValidLocation(col)){
       let newRow=this.getVacantRow(col);
       this.board[newRow][col]=this.currentPlayer;
+      return true;
     }
+    return false;
   }
 
   robotMove():void{
@@ -93,6 +104,12 @@ export class GameComponent implements OnInit {
   changePlayerTurn(idx:number):void{
     if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(idx)))
           this.currentPlayer=0;
+    else if(this.totalTilesClicked()==42){
+          this.modalTitle='Oops!!';
+          this.modalText="It's a Draw Match";
+          this.imageName='gametie.jpg';
+          this.openModal();
+    }
     else{ 
           this.currentPlayer=this.currentPlayer === 1?2:1;
           this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
@@ -102,28 +119,25 @@ export class GameComponent implements OnInit {
     if(this.gameStatus!="gameOver"){
       //if one is manual and one is automated
       if(this.shared.getGameType()=='robot'){
-          for(let i=1;i<=this.totalPlayers;i++){
-            if(this.player[i]=='robot'){
-                setTimeout(()=>{
-                  this.robotMove();
-                  this.changePlayerTurn(i);
-              },1000);
-              
-            } 
-            else if(this.player[i]=='manual'){
-                this.manualMove(col);
-                this.changePlayerTurn(i);
+          if(this.currentPlayer==1){
+              if(this.manualMove(col)){
+                  this.changePlayerTurn(this.currentPlayer);
+                  setTimeout(()=>{
+                              this.robotMove();
+                              this.changePlayerTurn(this.currentPlayer);
+                           },1000);
+              }
+            }
           }
-          }
-       }
 
       //if players are manual
       else if(this.shared.getGameType()=='manual'){
+        console.log("hi");
         this.manualMove(col);
         this.changePlayerTurn(this.currentPlayer);
-      }      
-    }
+      }    
    }
+  }
 
   pick_best_move():number{
     //take a temp board and check every possible move which benefits ai 
@@ -191,8 +205,9 @@ export class GameComponent implements OnInit {
             for(let c=0;c<totalColumns;c++){
                 let window_array=[];
                 for(let i=0;i<this.Window_Length;i++){
-                        if(slope=="upward-slope")
+                        if(slope==="upward-slope"){
                             window_array.push(temp_board[r+3-i][c+i]);
+                        }
                         else
                             window_array.push(temp_board[r+i][c+i]);
                 }
@@ -252,7 +267,7 @@ evaluate_window(window_array:number[]):number{
       return true;
     else if(this.loopingBoard(0,this.rows-3,this.columns,playerNo))
       return true;
-    else if(this.loopingBoard(3,this.rows,this.columns,playerNo))
+    else if(this.loopingBoard(3,this.rows,this.columns-3,playerNo))
       return true;
     else if(this.loopingBoard(0,this.rows-3,this.columns-3,playerNo))
       return true;
@@ -290,11 +305,24 @@ evaluate_window(window_array:number[]):number{
         this.score[playerNo]+=1;
         this.gameStatus="gameOver";
         this.turnIndicator=this.playerNames[playerNo] + " won";
+        this.modalTitle='Hurray!!'
+        this.modalText=this.turnIndicator + ' the game';
+        this.imageName="avathar"+playerNo+".png";
+        setTimeout(()=>{
+          this.openModal();
+        },2000);
         return true;
       }
     return false;
    }
-
+   openModal() {
+    this.isopenModal=true;
+    
+}
+  closeModal() {
+    this.newGame();
+    this.isopenModal=false;
+}
   ngOnInit(): void {
     
   }

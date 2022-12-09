@@ -6,6 +6,7 @@ import { GameComponent } from './game/game.component';
 import { DetailsComponent } from './details/details.component';
 import { FormsModule } from '@angular/forms';
 
+
 @NgModule({
   declarations: [
     AppComponent,

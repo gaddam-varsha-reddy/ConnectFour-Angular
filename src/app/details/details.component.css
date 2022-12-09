@@ -110,9 +110,6 @@
         transform: translateX(0px)
     }
 }
-.hide{
-    display:none;
-}
 .multiplayer-details{
     padding:10px;
     margin:30px auto auto;

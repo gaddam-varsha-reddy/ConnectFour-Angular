@@ -1,3 +1,6 @@
+.gamepage{
+    position:relative;
+}
 .tile{
     height:55px;
     width:55px;
@@ -5,7 +8,13 @@
     border-radius: 50%;
     border: 2px solid black;
     text-align: center;
-    background-image: url("../../assets/images/sky-background.jpg");
+    background-color: #83cae2;
+}
+.ball{
+    height:51px;
+    margin:0px;
+    border-radius: 50px;
+    padding: 0px;
 }
 .game-board{
     padding: 15px 0px 5px 15px;
@@ -121,23 +130,57 @@
     background-color: red;
     animation-name: dropanimation;
     animation-duration: 900ms;
-    background-image: unset;
 }
 .player2Color{
-    background-image: unset;
     background-color: yellowgreen;
     animation-name: dropanimation;
     animation-duration: 900ms;
 }
 @keyframes dropanimation {
-    0% { transform: translateY(-450px);}
-   100% { transform: translateY(0px);}
+    0% { transform: translateY(-450px);
+        }
+   100% { transform: translateY(0px);
+       }
  }
  @keyframes rightoption-animation{
     from{
-        transform: translateX(500px)
+        transform: translateX(500px);
     }
     to{
         transform: translateX(0px)
     }
+}
+
+.modal-open{
+    display: block;
+    position: fixed;
+    top:30px;
+}
+.modal-content{
+    border:2px solid black;
+    background-color: ghostwhite;
+    border-radius: 20px;
+    font-family: cursive;
+ }
+ .modal-text{
+    margin-top: 30px;
+    font-size: x-large;
+ }
+ .modal-btn{
+    text-align: center;
+    margin-bottom:20px;
+ }
+ .modal-btn button{
+    border-radius: 10px;
+    padding:10px;
+    background-color: unset;
+    margin:4px;
+ }
+ .modal-btn button:hover{
+    background-color: darkcyan;
+    color:white;
+}
+.modal-img img{
+    height: 90px;
+    width: 90px;
 }
