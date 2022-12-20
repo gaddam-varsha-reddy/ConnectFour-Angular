@@ -18,7 +18,6 @@ export class GameComponent implements OnInit {
   public board:number[][];
   private totalPlayers=2;
   private gameStatus:string;
-  public player:string[];
   public turnIndicator:string="Start Playing";
   private Window_Length=4;
   public isopenModal;
@@ -28,23 +27,23 @@ export class GameComponent implements OnInit {
 
   
   constructor(private shared:SharedService,private router:Router) {
-    this.currentPlayer=1;
+    this.currentPlayer=0;
     this.playerNames=this.shared.getPlayerNames();
-    this.board=[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],];
+    this.board=[[-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1],
+                [-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1]];
     this.count=0;
     this.rows=6;
     this.columns=7;
-    this.score=[0,0,0];
+    this.score=[0,0];
     this.gameStatus="running";
-    this.player=this.shared.playerType;
     this.turnIndicator= this.playerNames[this.currentPlayer]+"'s turn";
     this.isopenModal=false;
     this.modalTitle='';
     this.modalText='';
     this.imageName='gametie.jpg';
+    
    }
- 
+  
   getTileValue(row:number,col:number):number{
     return this.board[row][col];
   }
@@ -53,7 +52,7 @@ export class GameComponent implements OnInit {
     this.count=0;
     for(let i=0;i<this.rows;i++){
       for(let j=0;j<this.columns;j++){
-        if(this.board[i][j]!=0)
+        if(this.board[i][j]!=-1)
           this.count+=1;
       }
     }
@@ -61,12 +60,12 @@ export class GameComponent implements OnInit {
    }
 
   isValidLocation(col:number):boolean{
-    return this.board[0][col]===0;
+    return this.board[0][col]===-1;
    }
 
   getVacantRow(col:number):number{
     for(let i=5;i>=0;i--){
-      if(this.board[i][col]===0){
+      if(this.board[i][col]===-1){
         return i;
       }
     }
@@ -83,13 +82,11 @@ export class GameComponent implements OnInit {
 	  return valid_locations;
   }
 
-  manualMove(col:number):boolean{
+  manualMove(col:number):void{
     if(this.isValidLocation(col)){
       let newRow=this.getVacantRow(col);
       this.board[newRow][col]=this.currentPlayer;
-      return true;
     }
-    return false;
   }
 
   robotMove():void{
@@ -103,7 +100,7 @@ export class GameComponent implements OnInit {
   
   changePlayerTurn(idx:number):void{
     if((this.totalTilesClicked()>=7) && (this.DirectionsToCheck(idx)))
-          this.currentPlayer=0;
+          this.currentPlayer=-1;
     else if(this.totalTilesClicked()==42){
           this.modalTitle='Oops!!';
           this.modalText="It's a Draw Match";
@@ -111,33 +108,30 @@ export class GameComponent implements OnInit {
           this.openModal();
     }
     else{ 
-          this.currentPlayer=this.currentPlayer === 1?2:1;
+          this.currentPlayer=this.currentPlayer === 0?1:0;
           this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
         }
   }
   onTileClick(row:number,col:number):void{
     if(this.gameStatus!="gameOver"){
       //if one is manual and one is automated
-      if(this.shared.getGameType()=='robot'){
-          if(this.currentPlayer==1){
-              if(this.manualMove(col)){
+      if(this.shared.getGameType()=='robot' && this.currentPlayer==0){    
+            this.manualMove(col);
+            this.changePlayerTurn(this.currentPlayer);
+            setTimeout(()=>{
+                  this.robotMove();
                   this.changePlayerTurn(this.currentPlayer);
-                  setTimeout(()=>{
-                              this.robotMove();
-                              this.changePlayerTurn(this.currentPlayer);
-                           },1000);
-              }
-            }
-          }
+              },1000);
+          }      
+       }
 
       //if players are manual
-      else if(this.shared.getGameType()=='manual'){
-        console.log("hi");
+      if(this.shared.getGameType()==='manual'){
         this.manualMove(col);
         this.changePlayerTurn(this.currentPlayer);
-      }    
-   }
-  }
+      }      
+    }
+   
 
   pick_best_move():number{
     //take a temp board and check every possible move which benefits ai 
@@ -147,8 +141,8 @@ export class GameComponent implements OnInit {
     for(col in valid_locations){
         row=this.getVacantRow(valid_locations[col]);
         let temp_board = JSON.parse(JSON.stringify(this.board));
-        this.drop_piece(temp_board,row,valid_locations[col],2);
-        score=this.score_position(temp_board,2);
+        this.drop_piece(temp_board,row,valid_locations[col],1);
+        score=this.score_position(temp_board,1);
         if (score > best_score){
             best_score=score;
             best_col=valid_locations[col];
@@ -163,7 +157,7 @@ export class GameComponent implements OnInit {
     for(let i=0;i<this.rows;i++){
         center_array.push(temp_board[i][3]);
       }
-    let center_count=0;
+    let center_count=0; //prioritize middle column
     center_array.forEach(element => {
     if (element === playerNo) {
       center_count += 1;
@@ -224,33 +218,33 @@ evaluate_window(window_array:number[]):number{
       if(element==1){
         count_Array[1]+=1;
       }
-      else if(element==2){
-        count_Array[2]+=1;
-      }
-      else{
+      else if(element==0){
         count_Array[0]+=1;
       }
+      else{
+        count_Array[2]+=1;
+      }
   });
-  if(count_Array[2]==4)
+  if(count_Array[1]==4)
       score+=200;
-  else if(count_Array[2]==3 && count_Array[0]==1)
+  else if(count_Array[1]==3 && count_Array[2]==1)
       score+=50;
-  else if(count_Array[2]==2 && count_Array[0]==2)
+  else if(count_Array[1]==2 && count_Array[2]==2)
       score+=10;
-  if(count_Array[1]==3 && count_Array[0]==1)
+  if(count_Array[0]==3 && count_Array[2]==1)
       score-=80;
-  if(count_Array[1]==2 && count_Array[0]==2)
+  if(count_Array[0]==2 && count_Array[2]==2)
       score-=15;
   return score;
 }
   newGame():void{
     for(let i=0;i<this.rows;i++){
       for(let j=0;j<this.columns;j++){
-          this.board[i][j]=0;
+          this.board[i][j]=-1;
       }
     }
     this.gameStatus="running";
-    this.currentPlayer=1;
+    this.currentPlayer=0;
     this.turnIndicator=this.playerNames[this.currentPlayer] + "'s turn";
   }
 
@@ -263,14 +257,9 @@ evaluate_window(window_array:number[]):number{
   }
 
   DirectionsToCheck(playerNo:number):boolean{
-    if(this.loopingBoard(0,this.rows,this.columns-3,playerNo))
-      return true;
-    else if(this.loopingBoard(0,this.rows-3,this.columns,playerNo))
-      return true;
-    else if(this.loopingBoard(3,this.rows,this.columns-3,playerNo))
-      return true;
-    else if(this.loopingBoard(0,this.rows-3,this.columns-3,playerNo))
-      return true;
+    if(this.loopingBoard(0,this.rows,this.columns-3,playerNo) || this.loopingBoard(0,this.rows-3,this.columns,playerNo) ||
+       this.loopingBoard(3,this.rows,this.columns-3,playerNo) || this.loopingBoard(0,this.rows-3,this.columns-3,playerNo))
+        return true;
     return false;
    }
 

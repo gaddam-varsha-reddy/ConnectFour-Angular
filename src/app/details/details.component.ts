@@ -9,23 +9,20 @@ import { Router } from '@angular/router';
 export class DetailsComponent implements OnInit {
   public playerNames:string[];
   public gameType:string;
-  private totalPlayers:number;
+  public totalPlayers:number;
   constructor(private shared:SharedService,private router:Router) { 
-    this.playerNames=['','',''];
+    this.playerNames=['',''];
     this.gameType="none";
     this.totalPlayers=2;
   }
-  singlePlayer(){
-    this.gameType="robot";
-  }
-  multiPLayer(){
-    this.gameType="manual";
+  setGameType(type:string){
+    this.gameType=type;
   }
   startGame(){
     if(this.gameType=='robot'){
-      this.playerNames[2]="AI";
+      this.playerNames[1]="AI";
     }
-    for(let i=1;i<=this.totalPlayers;i++){
+    for(let i=0;i<this.totalPlayers;i++){
       this.shared.addPlayerNames(i,this.playerNames[i]);
     }
     this.shared.setGameType(this.gameType);

@@ -23,32 +23,19 @@
             <div class="col-4">
                 <div class="score-outerboard"><p>Score Board</p>
                     <div class="score-innerboard">
-                        <div class="row">
+                        <div class="row" *ngFor="let x of playerNames; let i=index">
                             <div class="col">
                                 <div class="playerDetails">
-                                    <div>{{playerNames[1]}}</div>
+                                    <div>{{playerNames[i]}}</div>
                                     <div class="playerImage">
-                                        <img src="../assets/images/avathar1.png">
+                                        <img src="../assets/images/avathar{{i}}.png">
                                     </div>
                                 </div>
                             </div>
                             <div class="col score">
-                                <div>{{score[1]}}</div>
+                                <div>{{score[i]}}</div>
                             </div>
-                        </div>
-                        <div class="row"><div class="vs">VS</div></div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="playerDetails">
-                                    <div>{{playerNames[2]}}</div>
-                                    <div class="playerImage">
-                                        <img src="../assets/images/avathar2.png">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col score">
-                                <div>{{score[2]}}</div>
-                            </div>
+                            <div class="row" *ngIf="i===0"><div class="vs">VS</div></div>
                         </div>
                     </div>
                 </div>
@@ -57,8 +44,10 @@
                     <div class="row p-0 m-0" *ngFor="let  row of board let i=index">
                         <div class="col p-0 m-0" *ngFor="let col of row let j=index">
                             <div class="tile" (click)="onTileClick(i,j)">
-                            <div class="ball" [ngClass]="{'player1Color' : getTileValue(i,j) ==1, 'player2Color': getTileValue(i,j) ==2}"> 
+                            <div class="ball" id="{{i}}-{{j}}" [ngClass]="{'player1Color' : getTileValue(i,j) ==0, 'player2Color': getTileValue(i,j) ==1}"> 
+                            
                             </div>
+                            <!-- <div class="ball" id="{{i}}-{{j}}">{{i}}{{j}}</div> -->
                             </div>
                         </div>
                     </div>

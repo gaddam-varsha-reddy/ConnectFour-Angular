@@ -1,9 +1,13 @@
+header{
+    padding-top:50px;
+    padding-bottom: 30px;
+}
 .gamepage{
     position:relative;
 }
 .tile{
-    height:55px;
-    width:55px;
+    height:60px;
+    width:60px;
     margin:0px 3px 0px 0px;
     border-radius: 50%;
     border: 2px solid black;
@@ -11,13 +15,13 @@
     background-color: #83cae2;
 }
 .ball{
-    height:51px;
+    height:56px;
     margin:0px;
-    border-radius: 50px;
+    border-radius: 30px;
     padding: 0px;
 }
 .game-board{
-    padding: 15px 0px 5px 15px;
+    padding: 15px 5px 5px 22px;
     height: 450px;
     background-color: #5C4033;
     display: flex;

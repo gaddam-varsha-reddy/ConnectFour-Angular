@@ -62,7 +62,7 @@
 .multiplayer-options{
     position: sticky;
     width:40%;
-    margin:50px auto auto auto;
+    margin:40px auto auto auto;
     text-align: center;
     font-family: cursive;
 }
@@ -110,12 +110,16 @@
         transform: translateX(0px)
     }
 }
+.hide{
+    display:none;
+}
 .multiplayer-details{
     padding:10px;
     margin:30px auto auto;
     width:50%;
 }
 .playername-layout{
+    width:100%;
     border:2px solid black;
     border-radius: 50px;
     height:50px;
