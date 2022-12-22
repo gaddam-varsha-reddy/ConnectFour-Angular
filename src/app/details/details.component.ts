@@ -11,7 +11,7 @@ export class DetailsComponent implements OnInit {
   public gameType:string;
   public totalPlayers:number;
   constructor(private shared:SharedService,private router:Router) { 
-    this.playerNames=['',''];
+    this.playerNames=['',' '];
     this.gameType="none";
     this.totalPlayers=2;
   }
